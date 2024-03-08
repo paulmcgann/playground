@@ -1,0 +1,110 @@
+﻿.IconPicker {
+    width: 70px;
+    height: 70px;
+    padding: 10px;
+    border: 1px solid #dedede;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .IconPicker:hover {
+        border: 1px solid #444;
+    }
+
+    .IconPicker span {
+        display: block;
+        font-size: 50px;
+    }
+
+/* Dialog Styling */
+.IconPicker-nFontAwesome-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 426px;
+}
+
+.IconPicker-nFontAwesome-controls {
+    display: flex;
+    flex-direction: column;
+}
+
+    .IconPicker-nFontAwesome-controls .IconPicker-nFontAwesome-search {
+        flex-grow: 1;
+    }
+
+        .IconPicker-nFontAwesome-controls .IconPicker-nFontAwesome-search input {
+            width: 95%;
+            font-size: 18px;
+            border: 1px solid;
+            padding: 5px;
+            border-radius: 5px;
+            border-color: rgb(200,200,200);
+        }
+
+    .IconPicker-nFontAwesome-controls .IconPicker-nFontAwesome-counter {
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+    }
+
+        .IconPicker-nFontAwesome-controls .IconPicker-nFontAwesome-counter strong {
+            font-size: 24px;
+            margin-right: 5px;
+        }
+
+.IconPicker-nFontAwesome-controls-row {
+    display: flex;
+    flex-direction: row;
+    margin: 0 0 20px;
+}
+
+.IconPicker-nFontAwesome-controls .IconPicker-nFontAwesome-styles {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-start;
+}
+
+    .IconPicker-nFontAwesome-controls .IconPicker-nFontAwesome-styles label {
+        margin-right: 15px;
+        font-size: 16px;
+    }
+
+.IconPicker-nFontAwesome-controls .IconPicker-nFontAwesome-size {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.IconPicker-nFontAwesome-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: start;
+}
+
+    .IconPicker-nFontAwesome-list div {
+        width: 10%;
+        height: 18%;
+        display: flex;
+        font-size: inherit;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(200,200,200,.0);
+        transition: background-color ease-in-out 300ms;
+    }
+
+        .IconPicker-nFontAwesome-list div:hover {
+            background-color: rgba(200,200,200,.3);
+        }
+
+        .IconPicker-nFontAwesome-list div span {
+            font-size: inherit;
+            transition: font-size linear 300ms;
+        }
+
+    .IconPicker-nFontAwesome-list.loading {
+        background: no-repeat url('//cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif') 50% 50%;
+    }
