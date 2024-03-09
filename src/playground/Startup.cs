@@ -44,7 +44,7 @@ namespace playground
             });
 
             
-
+            // Services registered for Email Service
             services
                 .AddFluentEmail("fromEmailGoesHere")
                 .AddRazorRenderer()
