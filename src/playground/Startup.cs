@@ -4,6 +4,7 @@ using EPiServer.Scheduler;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 using playground.Extensions;
+using playground.Features.Email;
 
 namespace playground
 {
@@ -41,6 +42,15 @@ namespace playground
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
+            
+
+            services
+                .AddFluentEmail("fromEmailGoesHere")
+                .AddRazorRenderer()
+                .AddSmtpSender("host", 587, "username", "password");
+
+            services.AddSingleton<IEmailService, EmailService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -1,6 +1,7 @@
 using EPiServer.Web;
 using EPiServer.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
+using playground.Features.Email;
 using playground.Models.Pages;
 using playground.Models.ViewModels;
 
@@ -8,7 +9,14 @@ namespace playground.Controllers
 {
     public class StartPageController : PageControllerBase<StartPage>
     {
-        public IActionResult Index(StartPage currentPage)
+        private readonly IEmailService _emailService;
+
+        public StartPageController(IEmailService emailService)
+        {
+            _emailService = emailService;
+        }
+
+        public async Task<IActionResult> Index(StartPage currentPage)
         {
             var model = PageViewModel.Create(currentPage);
 
@@ -23,6 +31,10 @@ namespace playground.Controllers
                 editHints.AddConnection(m => m.Layout.NewsPages, p => p.NewsPageLinks);
                 editHints.AddConnection(m => m.Layout.CustomerZonePages, p => p.CustomerZonePageLinks);
             }
+
+            await _emailService.SendEmailAsync("toEmailAddress", "Hello World", "Sending an email using code");
+
+            await _emailService.SendEmailFluentAsync("toEmailAddress", "Hello World");
 
             return View(model);
         }
