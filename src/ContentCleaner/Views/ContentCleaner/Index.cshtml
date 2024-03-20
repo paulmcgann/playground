@@ -1,0 +1,121 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using EPiServer.Framework.Localization
+@using EPiServer.Web.Mvc.Html
+@using EPiServer.Shell.Web.Mvc.Html
+@using EPiServer.Core
+@using EPiServer.Web
+@using EPiServer.Web.Mvc
+@using EPiServer.Web.Routing
+@using Microsoft.AspNetCore.Mvc.Razor
+@using Microsoft.AspNetCore.Html
+@using EPiServer.Framework.Web.Resources
+@using EPiServer.Shell.Navigation
+@using EPiServer.Editor
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model Content_Cleaner.ViewModels.ContentCleanerViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Content Cleaner</title>
+
+    <!-- Shell -->
+    @ClientResources.RenderResources("ShellCore")
+
+    <!-- LightTheme -->
+    @ClientResources.RenderResources("ShellCoreLightTheme")
+</head>
+<body class="epi-workspace">
+
+    @Html.Raw(Html.CreatePlatformNavigationMenu())
+    <div @Html.Raw(Html.ApplyPlatformNavigation())>
+        <div class="epi-contentContainer epi-padding">
+            <div class="epi-contentArea">
+
+                <h1 class="EP-prefix">Content Cleaner</h1>
+
+                <div>
+                    <p id="message"></p>
+                </div>
+
+                <div>
+                    <form asp-controller="contentcleaner" asp-action="index" method="post" id="contentTypeSelectionForm">
+                        <h2>Content Type Selection</h2>
+
+                        <div>
+                            <label asp-for="ContentTypeId">Select content type:</label>
+                            <select asp-for="ContentTypeId" asp-items="@Model.ContentItems">
+                            </select>
+
+                            <button type="submit" class="epi-cmsButton">List content</button>
+                        </div>
+
+                    </form>
+                </div>
+
+                @if (Model.ContentUsages?.Any() ?? false)
+                {
+                    <div>
+                        <h2>Content</h2>
+                        <table>
+                            <tr>
+                                <th>Id</th>
+                                <th>Location</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            @foreach (var item in Model.ContentUsages)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.Content.ContentLink.ID
+                                    </td>
+                                    <td>
+                                        <a href="@item.ContentUrl" target="_blank">
+                                            @item.Breadcrumb
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="@PageEditing.GetEditUrl(item.Content.ContentLink)" target="_blank">
+                                            Edit
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <button class="js-delete-button" data-contentref="@item.Content.ContentLink">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.js-delete-button').click(function () {
+                let contentRef = $(this).data('contentref');
+                $.get('/contentcleaner/delete/', { contentRef: contentRef })
+                    .done(function (data) {
+                        $("#contentTypeSelectionForm").trigger("submit");
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        $("#message").text(`Delete failed - ${jqXHR.responseText}`);
+                    });
+            });
+        });
+    </script>
+
+</body>
+</html>

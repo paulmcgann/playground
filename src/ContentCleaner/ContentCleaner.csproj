@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Title>Content Cleaner</Title>
+		<Description>An Optimizely CMS 12 plugin to let you find content of a specific type and delete all or selected instances</Description>
+		<PackageProjectUrl>https://github.com/paulmcgann/playground</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/paulmcgann/playground</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>optimizely;cms12;content;clean</PackageTags>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EPiServer.CMS.UI.Core" Version="12.9.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.28" />
+  </ItemGroup>
+
+</Project>

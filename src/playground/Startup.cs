@@ -1,5 +1,6 @@
 using EPiServer.Cms.Shell;
 using EPiServer.Cms.UI.AspNetIdentity;
+using EPiServer.OpenIDConnect;
 using EPiServer.Scheduler;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
@@ -43,7 +44,49 @@ namespace playground
                 options.Cookie.IsEssential = true;
             });
 
-            
+            // Content Delivery API
+            services.AddContentDeliveryApi()
+                .WithFriendlyUrl()
+                .WithSiteBasedCors();
+
+            string[] origins = ["https://localhost:3000", "https://localhost:5000"];
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    "CorsPolicy",
+                    builder =>
+                    {
+                        builder
+                            .WithOrigins(origins)
+                            .WithExposedContentDeliveryApiHeaders()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials();
+                    });
+            });
+
+            services.ConfigureContentApiOptions(options =>
+            {
+                options.FlattenPropertyModel = true;
+            });
+            services.AddContentDeliveryApi(options =>
+            {
+                options.SiteDefinitionApiEnabled = false;
+                options.CorsPolicyName = "CorsPolicy";
+            });
+            services.AddContentSearchApi(options =>
+            {
+                options.MaximumSearchResults = 20;
+                options.SearchCacheDuration = TimeSpan.FromMinutes(10);
+            });
+
+            // Content Delivery Search API
+            services.AddContentSearchApi(o =>
+            {
+                o.MaximumSearchResults = 100;
+            });
+
             // Services registered for Email Service
             services
                 .AddFluentEmail("fromEmailGoesHere")
@@ -64,10 +107,12 @@ namespace playground
             app.UseDetection();
             app.UseSession();
 
+
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
