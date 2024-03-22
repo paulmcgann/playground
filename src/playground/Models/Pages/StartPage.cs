@@ -1,4 +1,7 @@
+using EPiServer.Framework.Web;
 using EPiServer.SpecializedProperties;
+using EPiServer.Web;
+using playground.Business;
 using playground.Models.Blocks;
 using System.ComponentModel.DataAnnotations;
 using static playground.Globals;
@@ -31,7 +34,7 @@ namespace playground.Models.Pages
             typeof(ISearchPage),
             typeof(LandingPage)
         ])] // ...and underneath those we can't create additional start pages
-    public class StartPage : SitePageData
+    public class StartPage : SitePageData, IDynamicTemplateContent
     {
 
         [Display(Name = "Icon Picker", GroupName = SystemTabNames.Content, Order = 10)]
@@ -67,5 +70,42 @@ namespace playground.Models.Pages
 
         [Display(GroupName = Globals.GroupNames.SiteSettings)]
         public virtual SiteLogotypeBlock SiteLogotype { get; set; }
+
+        [Display(Name = "Template", Order = 90)]
+        [UIHint("TemplateModel")]
+        public virtual string SelectedTemplateModel { get; set; }
+
+        public void SetDynamicTemplate(TemplateResolverEventArgs args)
+        {
+            if (string.IsNullOrWhiteSpace(SelectedTemplateModel)
+            || SelectedTemplateIsPreviewController(args.SelectedTemplate))
+            {
+                return;
+            }
+
+            TemplateModel selectedTemplate = args.SupportedTemplates
+                .FirstOrDefault(
+                    tmpl => tmpl.TemplateType.FullName.Equals(
+                        SelectedTemplateModel,
+                        StringComparison.InvariantCultureIgnoreCase
+                    )
+                );
+
+            if (selectedTemplate != null)
+            {
+                // The template that the editor selected is supported. Switch to it.
+                args.SelectedTemplate = selectedTemplate;
+            }
+        }
+
+        private bool SelectedTemplateIsPreviewController(TemplateModel selectedTemplate)
+        {
+            if (selectedTemplate == null || selectedTemplate.Tags == null)
+            {
+                return false;
+            }
+
+            return Array.IndexOf(selectedTemplate.Tags, RenderingTags.Preview) > -1;
+        }
     }
 }
