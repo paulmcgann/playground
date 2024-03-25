@@ -1,6 +1,4 @@
-﻿using EPiServer.DataAbstraction;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Content_Cleaner.ViewModels
 {
@@ -8,7 +6,7 @@ namespace Content_Cleaner.ViewModels
     {
         public IEnumerable<SelectListItem> ContentItems { get; set; } = new List<SelectListItem>();
 
-        public IEnumerable<ContentUsageBreadcrumb<ContentUsage>> ContentUsages { get; set; } = new List<ContentUsageBreadcrumb<ContentUsage>>();
+        public IEnumerable<ContentUsageDataViewModel> ContentUsages { get; set; } = new List<ContentUsageDataViewModel>();
 
         public int ContentTypeId { get; set; }
     }

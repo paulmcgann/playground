@@ -6,6 +6,7 @@ using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 using playground.Extensions;
 using playground.Features.Email;
+using ContentCleaner.Config;
 
 namespace playground
 {
@@ -43,6 +44,8 @@ namespace playground
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
+            services.AddContentCleaner();
 
             // Content Delivery API
             services.AddContentDeliveryApi()

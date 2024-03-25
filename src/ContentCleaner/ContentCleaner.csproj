@@ -12,6 +12,9 @@
 		<RepositoryUrl>https://github.com/paulmcgann/playground</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>optimizely;cms12;content;clean</PackageTags>
+		<AssemblyVersion>1.0.0.1</AssemblyVersion>
+		<FileVersion>1.0.0.1</FileVersion>
+		<Version>1.0.2$(VersionPrefix)</Version>
 	</PropertyGroup>
 
   <ItemGroup>

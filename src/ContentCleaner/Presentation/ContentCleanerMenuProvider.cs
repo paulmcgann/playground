@@ -1,4 +1,4 @@
-﻿using EPiServer.Authorization;
+﻿using ContentCleaner;
 using EPiServer.Shell.Navigation;
 
 namespace Content_Cleaner.Presentation
@@ -8,17 +8,14 @@ namespace Content_Cleaner.Presentation
     {
         public IEnumerable<MenuItem> GetMenuItems()
         {
-            var contentCleaner = new UrlMenuItem("Content Cleaner", MenuPaths.Global + "/cms/admin/contentcleaner", "/contentcleaner/index")
+            var contentCleaner = new UrlMenuItem("Content Cleaner", "/global/cms/content.cleaner", "/content.cleaner/admin")
             {
                 IsAvailable = _ => true,
-                SortIndex = 70,
-                AuthorizationPolicy = CmsPolicyNames.CmsAdmin
+                SortIndex = SortIndex.Last + 1,
+                AuthorizationPolicy = Constants.AuthorizationPolicy
             };
 
-            return new List<MenuItem>(1)
-        {
-            contentCleaner
-        };
+            return new List<MenuItem> { contentCleaner };
         }
     }
 }

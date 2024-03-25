@@ -1,121 +1,130 @@
-﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@using EPiServer.Framework.Localization
-@using EPiServer.Web.Mvc.Html
-@using EPiServer.Shell.Web.Mvc.Html
-@using EPiServer.Core
-@using EPiServer.Web
-@using EPiServer.Web.Mvc
-@using EPiServer.Web.Routing
-@using Microsoft.AspNetCore.Mvc.Razor
-@using Microsoft.AspNetCore.Html
-@using EPiServer.Framework.Web.Resources
-@using EPiServer.Shell.Navigation
-@using EPiServer.Editor
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-
+﻿@using EPiServer.Shell.Navigation
 @model Content_Cleaner.ViewModels.ContentCleanerViewModel
 
 @{
-    Layout = null;
+    Layout = "";
 }
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Content Cleaner</title>
 
-    <!-- Shell -->
-    @ClientResources.RenderResources("ShellCore")
-
-    <!-- LightTheme -->
-    @ClientResources.RenderResources("ShellCoreLightTheme")
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
-<body class="epi-workspace">
-
-    @Html.Raw(Html.CreatePlatformNavigationMenu())
-    <div @Html.Raw(Html.ApplyPlatformNavigation())>
-        <div class="epi-contentContainer epi-padding">
-            <div class="epi-contentArea">
-
-                <h1 class="EP-prefix">Content Cleaner</h1>
-
-                <div>
-                    <p id="message"></p>
-                </div>
-
-                <div>
-                    <form asp-controller="contentcleaner" asp-action="index" method="post" id="contentTypeSelectionForm">
-                        <h2>Content Type Selection</h2>
-
-                        <div>
-                            <label asp-for="ContentTypeId">Select content type:</label>
-                            <select asp-for="ContentTypeId" asp-items="@Model.ContentItems">
-                            </select>
-
-                            <button type="submit" class="epi-cmsButton">List content</button>
-                        </div>
-
-                    </form>
-                </div>
-
-                @if (Model.ContentUsages?.Any() ?? false)
-                {
-                    <div>
-                        <h2>Content</h2>
-                        <table>
-                            <tr>
-                                <th>Id</th>
-                                <th>Location</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                            @foreach (var item in Model.ContentUsages)
+<body>
+    @Html.CreatePlatformNavigationMenu()
+    <div @Html.ApplyPlatformNavigation()>
+        <main class="container">
+            <div class="bg-body-tertiary p-5 rounded">
+                <h1>Content Cleaner</h1>
+                <p class="lead">This example is a quick exercise to illustrate how fixed to top navbar works. As you scroll, it will remain fixed to the top of your browser’s viewport.</p>
+                <form>
+                    <div class="mb-3">
+                        <label for="ddlContentTypes" class="form-label">Content Types</label>
+                        <select id="ddlContentTypes" class="form-select">
+                            <option selected>Please select</option>
+                            @foreach (var item in Model.ContentItems)
                             {
-                                <tr>
-                                    <td>
-                                        @item.Content.ContentLink.ID
-                                    </td>
-                                    <td>
-                                        <a href="@item.ContentUrl" target="_blank">
-                                            @item.Breadcrumb
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="@PageEditing.GetEditUrl(item.Content.ContentLink)" target="_blank">
-                                            Edit
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <button class="js-delete-button" data-contentref="@item.Content.ContentLink">
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
+                                <option value="@item.Value">@item.Text</option>
                             }
-                        </table>
+                        </select>
                     </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                <table id="example" class="display" style="width:100%;display:none;">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Location</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Location</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </main>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap5.js"></script>
+
+    <script type="text/javascript">
+        jQuery.noConflict();
+        (function ($) {
+
+            function DeleteContentById(id) {
+
+                fetch('/content.cleaner/api/delete?contentRef=' + id, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: null
+                })
+            }
+
+            function GetContentTypes() {
+                var contentTypeId = $("select#ddlContentTypes option:checked").val();
+
+                if ($.fn.dataTable.isDataTable('#example')) {
+                    $('#example').DataTable().destroy();
                 }
 
-            </div>
-        </div>
-    </div>
+                var table = new DataTable('#example', {
+                    ajax: '/content.cleaner/api/getcontenttypeusage?contentTypeId=' + contentTypeId,
+                    columns: [
+                        { data: 'id' },
+                        { data: 'location' },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                return '<a href=' + data.editUrl + ' target="_blank" role="button" class="btn btn-sm btn-primary" style="color:#fff"><i class="fa fa-pencil"></i></a>';
+                            }
+                        },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                return '<button type="button" class="btn btn-sm btn-primary"><i class="fa fa-trash"></i></button>';
+                            }
+                        }
+                    ],
+                    processing: true,
+                    serverSide: true,
+                    ordering: false,
+                    paging: false,
+                    searching: false
+                });
 
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js" crossorigin="anonymous"></script>
+                $('#example').show();
 
-    <script>
-        $(document).ready(function () {
-            $('.js-delete-button').click(function () {
-                let contentRef = $(this).data('contentref');
-                $.get('/contentcleaner/delete/', { contentRef: contentRef })
-                    .done(function (data) {
-                        $("#contentTypeSelectionForm").trigger("submit");
-                    })
-                    .fail(function (jqXHR, textStatus, errorThrown) {
-                        $("#message").text(`Delete failed - ${jqXHR.responseText}`);
-                    });
+                table.on('click', 'button', function (e) {
+                    let data = table.row(e.target.closest('tr')).data();
+                    DeleteContentById(data.id);
+                    GetContentTypes();
+                });
+            }
+
+            $("form").on("submit", function (event) {
+
+                event.preventDefault();
+
+                GetContentTypes();
             });
-        });
-    </script>
 
+        })(jQuery);
+    </script>
 </body>
 </html>
